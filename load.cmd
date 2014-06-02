@@ -11,7 +11,7 @@ REM    - does not open password-protected backups
 REM    - does not allow writeable backups
 REM  For these features, see mount /?
 
-REM Version 1.1
+REM Version 1.2
 
 setlocal
 echo.
@@ -33,7 +33,8 @@ if not exist %backuppath% goto error_backup_file_not_found
 
 REM Remove trailing colon, use only first char for drive letter
 REM Note - rather than using d=auto, this way we can dismount the backup when finished
-set drivepath=%%2:~0,1%
+set d=%2
+set drivepath=%d:~0,1%
 if exist %drivepath%:\nul goto error_drive_letter_in_use
 
 echo Loading driver...
@@ -49,16 +50,17 @@ mount s %backuppath% d=%drivepath% >nul
 REM Need to show errors so leave 2>nul off
 echo Backup file mounted to %drivepath%:.
 echo.
-echo ==========================================================
-echo #                                                        #
-echo #              DO NOT CLOSE THIS WINDOW!                 #
-echo #                                                        #
-echo #  When you have finished copying your files from the    #
-echo #  backup mounted drive, press SPACEBAR in this window   #
-echo #  to dismount the drive and backup file.                #
-echo #  !! FAILURE TO DO SO MAY CORRUPT YOUR BACKUP FILE !!   #
-echo #                                                        #
-echo ==========================================================
+echo ----------------------------------------------------------
+echo -                                                        -
+echo -              DO NOT CLOSE THIS WINDOW!                 -
+echo -                                                        -
+echo -  When you have finished copying your files from the    -
+echo -  backup mounted drive, press SPACEBAR in this window   -
+echo -  to dismount the drive and backup file.                -
+echo -                                                        -
+echo - !! FAILURE TO DO SO MAY CORRUPT YOUR BACKUP FILE !!    -
+echo -                                                        -
+echo ----------------------------------------------------------
 pause 2>nul
 echo.
 echo Unmounting backup...
@@ -80,15 +82,17 @@ echo Error: Could not locate backup file (%backuppath%)
 goto :usage
 
 :error_drive_letter_in_use
-echo %drivemount% is already in use, choose another drive letter
+echo %drivepath% is already in use, choose another drive letter
 goto usage
 
 :error_mounting_backup
 echo Could not load backup (see above message).
+echo Contact IT.
 goto :EOF
 
 :error_loading_driver
 echo Could not load driver (see above message).
+echo Contact IT.
 goto :EOF
 
 :error_copy_driver
@@ -98,7 +102,7 @@ goto :EOF
 
 :error_no_mount
 echo Cannot locate "mount.exe".
-echo Please ensure this file rests in the "sp" folder on this USB key
+echo Please ensure this file rests in the "SP" folder on this USB key
 goto :EOF
 
 :usage
